@@ -5,27 +5,53 @@ var {
   graphql,
   buildSchema
 } = require('graphql');
-
-var connection = mysql.createConnection({
+const Sequelize = require('sequelize');
+const sequelize = new Sequelize('tootorstest1', 'tootorstest1', 'Ry6NT-nq0s-A', {
   host: 'den1.mysql5.gear.host',
-  user: 'tootorstest1',
-  password: 'Ry6NT-nq0s-A',
-  database: 'tootorstest1'
+  dialect: 'mysql',
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000,
+  },
+  operatorsAliases: false
 });
 
-connection.connect(function(err) {
-  if (err) {
-    console.error('error connecting: ' + err.stack);
-    return;
-  }
 
-  var sql = "SELECT * FROM student";
-  connection.query(sql, function(err, result) {
-    if (err) throw err;
-    console.log(result);
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
   });
 
+const Student = sequelize.define('student', {
+  name: {
+    type: Sequelize.STRING
+  },
+  alias: {
+    type: Sequelize.STRING
+  },
+  status: {
+    type: Sequelize.STRING
+  },
+}, {
+  createdAt: false,
+  updatedAt: false,
+  freezeTableName: true
 });
+
+Student.findAll().then(users => {
+  console.log(users)
+})
+
+
+
+
+
 
 var schema = buildSchema(`
   type Query {
@@ -33,7 +59,9 @@ var schema = buildSchema(`
   }
 `);
 
-var root = { hello: () => 'Hello world!' };
+var root = {
+  hello: () => 'Hello world!'
+};
 
 var app = express();
 app.use('/graphql', graphqlHTTP({
