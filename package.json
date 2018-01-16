@@ -1,5 +1,5 @@
 {
-  "name": "Graph QL test1",
+  "name": "app",
   "version": "0.0.1",
   "main": "server.js",
   "author": "Gary Velasquez <gary.velasquez.lopez@gmail.com>",
